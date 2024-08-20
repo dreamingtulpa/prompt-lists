@@ -6,7 +6,7 @@ generation on [PROMPTCACHE](https://promptcache.com).
 ## Installation
 
 ```ruby
-gem "prompt-lists"
+gem "prompt-lists", require: 'prompt_lists'
 ```
 
 ## Usage
