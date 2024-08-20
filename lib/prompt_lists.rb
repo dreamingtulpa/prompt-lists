@@ -3,7 +3,7 @@
 require 'yaml'
 
 module PromptLists
-  VERSION = '0.0.3'
+  VERSION = '0.0.4'
 
   class List
     def initialize(list_name, sublist_names)
