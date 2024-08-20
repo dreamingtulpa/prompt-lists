@@ -7,12 +7,11 @@ Gem::Specification.new do |spec|
   spec.version = PromptLists::VERSION
   spec.authors = ["Dreaming Tulpa"]
   spec.email = ["hey@dreamingtulpa.com"]
+  spec.licenses = ['MIT']
 
-  spec.summary = "Categorised lists of things for AI image and media generation."
-  spec.homepage = "https://github.com/dreamingtulpa/prompt-lists"
+  spec.summary = "Categorised lists of things for AI image and media generation on promptcache.com."
+  spec.homepage = "https://promptcache.com"
   spec.required_ruby_version = ">= 2.6.0"
-
-  # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/dreamingtulpa/prompt-lists"

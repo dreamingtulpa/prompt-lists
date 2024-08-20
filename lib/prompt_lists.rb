@@ -6,24 +6,23 @@ module PromptLists
   VERSION = '0.0.1'
 
   class List
-    def initialize(file_paths)
-      @sublists = file_paths.map do |file_path|
-        id = File.basename(file_path, ".yml").gsub("-", "_").to_sym
-        Hash[id, file_path]
-      end
+    def initialize(list_name, sublist_names)
+      @id = list_name.to_sym
+      @sublists = sublist_names
     end
 
     def method_missing(method_name, *args)
-      sublist = @sublists.find { |sublist| sublist.key?(method_name) }
+      sublist = @sublists.find { |sublist| sublist == method_name }
       if sublist
-        Sublist.new(sublist.values[0])
+        path = "lists/#{@id}/#{sublist}.yml"
+        Sublist.new(path)
       else
         super
       end
     end
 
     def respond_to_missing?(method_name, include_private = false)
-      sublist = @sublists.find { |sublist| sublist.key?(method_name) }
+      sublist = @sublists.find { |sublist| sublist == method_name }
       sublist || super
     end
   end
@@ -42,24 +41,29 @@ module PromptLists
   end
 
   class << self
-    def method_missing(method_name, *args)
-      list_name = method_name.to_s
-      if list_exists?(list_name)
-        result = load_list(list_name)
-        List.new(result)
-      else
-        super
+    def all
+      Dir["lists/*"].map do |list|
+        list_name = File.basename(list)
+        List.new(list_name, load_sublists(list_name))
       end
     end
 
-    def respond_to_missing?(method_name, include_private = false)
-      list_exists?(method_name.to_s) || super
+    def find(list_name)
+      if list_exists?(list_name)
+        List.new(list_name, load_sublists(list_name))
+      end
+    end
+
+    def method_missing(method_name, *args)
+      find(method_name) || super
     end
 
     private
 
-    def load_list(list_name)
-      Dir["lists/#{list_name}/*.yml"]
+    def load_sublists(list_name)
+      Dir["lists/#{list_name}/*.yml"].map do |file_path|
+        File.basename(file_path, ".yml").gsub(/-/, "_").to_sym
+      end
     end
 
     def list_exists?(list_name)
