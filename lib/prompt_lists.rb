@@ -3,7 +3,7 @@
 require 'yaml'
 
 module PromptLists
-  VERSION = '0.0.4'
+  VERSION = '0.0.5'
 
   class List
     def initialize(list_name, sublist_names)
@@ -14,7 +14,8 @@ module PromptLists
     def method_missing(method_name, *args)
       sublist = @sublists.find { |sublist| sublist == method_name }
       if sublist
-        path = File.expand_path("../lists/#{@id}/#{sublist}.yml", __dir__)
+        sublist_filename = method_name.to_s.gsub(/_/, "-")
+        path = File.expand_path("../lists/#{@id}/#{sublist_filename}.yml", __dir__)
         Sublist.new(path)
       else
         super

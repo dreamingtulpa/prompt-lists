@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    prompt-lists (0.0.3)
+    prompt-lists (0.0.5)
 
 GEM
   remote: https://rubygems.org/
