@@ -6,13 +6,15 @@ module PromptLists
   VERSION = '0.0.5'
 
   class List
+    attr_reader :id, :sublist_names
+
     def initialize(list_name, sublist_names)
       @id = list_name.to_sym
-      @sublists = sublist_names
+      @sublist_names = sublist_names
     end
 
     def method_missing(method_name, *args)
-      sublist = @sublists.find { |sublist| sublist == method_name }
+      sublist = @sublist_names.find { |sublist| sublist == method_name }
       if sublist
         sublist_filename = method_name.to_s.gsub(/_/, "-")
         path = File.expand_path("../lists/#{@id}/#{sublist_filename}.yml", __dir__)
@@ -23,14 +25,17 @@ module PromptLists
     end
 
     def respond_to_missing?(method_name, include_private = false)
-      sublist = @sublists.find { |sublist| sublist == method_name }
+      sublist = @sublist_names.find { |sublist| sublist == method_name }
       sublist || super
     end
   end
 
   class Sublist
+    attr_reader :id
+    attr_accessor :metadata, :items
     def initialize(file_path)
       @file_path = file_path
+      @id = File.basename(file_path, ".yml").gsub(/-/, "_").to_sym
       @content = File.read(@file_path)
       if @content =~ /^(---\s*\n.*?\n?)^(---\s*$\n?)/m
         @items = @content[($1.size + $2.size)..-1].split("\n")
@@ -38,7 +43,6 @@ module PromptLists
       end
       @metadata = (@metadata || {})
     end
-    attr_accessor :metadata, :items
   end
 
   class << self
