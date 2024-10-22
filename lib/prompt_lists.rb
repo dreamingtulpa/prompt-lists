@@ -1,9 +1,8 @@
 # frozen_string_literal: true
-
 require 'yaml'
 
 module PromptLists
-  VERSION = '0.1.0'
+  VERSION = '0.1.1'
 
   class List
     attr_reader :id, :sublist_names
@@ -33,6 +32,7 @@ module PromptLists
   class Sublist
     attr_reader :id
     attr_accessor :metadata, :items
+
     def initialize(file_path)
       @file_path = file_path
       @id = File.basename(file_path, ".yml").gsub(/-/, "_").to_sym
@@ -49,14 +49,25 @@ module PromptLists
     def all
       Dir[File.expand_path("../lists/*", __dir__)].map do |list|
         list_name = File.basename(list)
-        List.new(list_name, load_sublists(list_name))
+        find(list_name)
       end
     end
 
     def find(list_name)
-      if list_exists?(list_name)
-        List.new(list_name, load_sublists(list_name))
+      @lists ||= {}
+
+      if list_name.to_s.include?('.')
+        main_list, sublist = list_name.to_s.split('.')
+        if list_exists?(main_list)
+          list = find(main_list)
+          sublist_sym = sublist&.gsub(/-/, '_')&.to_sym
+          return list.send(sublist_sym) if list.sublist_names.include?(sublist_sym)
+        end
+      elsif list_exists?(list_name)
+        @lists[list_name.to_sym] ||= List.new(list_name, load_sublists(list_name))
+        return @lists[list_name.to_sym]
       end
+      nil
     end
 
     def method_missing(method_name, *args)
