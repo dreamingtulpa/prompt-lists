@@ -2,7 +2,7 @@
 require 'yaml'
 
 module PromptLists
-  VERSION = '0.1.2'
+  VERSION = '0.1.3'
 
   class List
     attr_reader :id, :sublist_names
